@@ -3,7 +3,8 @@ from flask_cors import CORS,cross_origin
 import requests
 from bs4 import BeautifulSoup as bs
 from urllib.request import urlopen as uReq
-import pymongo
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
 application = Flask(__name__) # initializing a flask app
 app=application
@@ -71,9 +72,13 @@ def index():
                 mydict = {"Product": searchString, "Name": name, "Rating": rating, "CommentHead": commentHead,
                           "Comment": custComment}
                 reviews.append(mydict)
-            client = pymongo.MongoClient("mongodb+srv://pwskills:pwskills@cluster0.ln0bt5m.mongodb.net/?retryWrites=true&w=majority")
-            db = client['review_scrap']
-            review_col = db['review_scrap_data']
+
+
+                uri = "mongodb+srv://Pytonlearning:Bishu1994@cluster0.ozde5yd.mongodb.net/?retryWrites=true&     w=majority"
+# Create a new client and connect to the server
+                client = MongoClient(uri, server_api=ServerApi('1'))
+                db = client['review_scrap']
+                review_col = db['review_scrap_data']
             review_col.insert_many(reviews)
             return render_template('results.html', reviews=reviews[0:(len(reviews)-1)])
         except Exception as e:
